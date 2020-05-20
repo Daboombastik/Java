@@ -25,10 +25,17 @@ public class Circle {
     }
 
     public void update(Tank tank) {
-        if ( tank.getPositionTank().x == positionCircle.x-radius ||
-             tank.getPositionTank().y == positionCircle.y-radius ) {
-            positionCircle.x = (float) Math.random() * 1280;
-            positionCircle.y = (float) Math.random() * 720;
-        }
+        if (
+                (tank.getPositionTank().x+20 >= positionCircle.x - radius &&
+                tank.getPositionTank().x-20 <= positionCircle.x + radius) &&
+                (tank.getPositionTank().y+20 >= positionCircle.y - radius &&
+                tank.getPositionTank().y-20 <= positionCircle.y + radius)
+        )
+            changeCircleCoordinates();
+    }
+
+    private void changeCircleCoordinates() {
+        positionCircle.x = (float) Math.random() * 1000;
+        positionCircle.y = (float) Math.random() * 500;
     }
 }
