@@ -1,19 +1,20 @@
-package com.dune.game;
+package com.dune.game.core;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.dune.game.core.Tank;
 
 public class Circle {
 
-    private ShapeRenderer shapeRenderer;
-    private Vector2 positionCircle;
-    private float initX = (float) Math.random() * 1000;
-    private float initY = (float) Math.random() * 500;
+    private final ShapeRenderer shapeRenderer;
+    private final Vector2 positionCircle;
     private final int radius = 50;
 
     public Circle() {
         shapeRenderer = new ShapeRenderer();
+        float initX = (float) Math.random() * 1000;
+        float initY = (float) Math.random() * 500;
         positionCircle = new Vector2(initX, initY);
     }
 
@@ -26,10 +27,10 @@ public class Circle {
 
     public void update(Tank tank) {
         if (
-                (tank.getPositionTank().x+20 >= positionCircle.x - radius &&
-                tank.getPositionTank().x-20 <= positionCircle.x + radius) &&
-                (tank.getPositionTank().y+20 >= positionCircle.y - radius &&
-                tank.getPositionTank().y-20 <= positionCircle.y + radius)
+                tank.getPosition().x+20 >= positionCircle.x - radius &&
+                tank.getPosition().y+20 >= positionCircle.y - radius &&
+                tank.getPosition().x-20 <= positionCircle.x + radius &&
+                tank.getPosition().y-20 <= positionCircle.y + radius
         )
             changeCircleCoordinates();
     }

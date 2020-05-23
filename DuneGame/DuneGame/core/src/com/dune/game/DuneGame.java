@@ -1,55 +1,35 @@
 package com.dune.game;
 
-import com.badlogic.gdx.Application;
-import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
+import com.dune.game.screens.GameScreen;
 
-public class DuneGame extends ApplicationAdapter {
-
+public class DuneGame extends Game {
     private SpriteBatch batch;
-    private Tank tank;
-    private Circle circle;
-//    ShapeRenderer shapeRenderer;
+    private GameScreen gameScreen;
+
+    // Домашнее задание:
+    // 1. Разбор кода, в домашке задавайте вопросы что не ясно
+    // 2. Реализовать класс Projectile (снаряд), игрок по кнопке K
+    // может выпускать снаряд. Если снаряд улетает за экран, он
+    // должен деактивироваться. Если снаряд деактивирован, то им можно
+    // выстрелить снова
 
     @Override
     public void create() {
-        batch = new SpriteBatch();
-        tank = new Tank(200, 200);
-        circle = new Circle();
+        this.batch = new SpriteBatch();
+        this.gameScreen = new GameScreen(batch);
+        this.setScreen(gameScreen);
     }
 
     @Override
     public void render() {
-        float dt = Gdx.graphics.getDeltaTime();
-        update(dt);
-        Gdx.gl.glClearColor(0, 0.4f, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        batch.begin();
-        tank.render(batch);
-        batch.end();
-        circle.render();
-    }
-
-    public void update(float dt) {
-        tank.update(dt);
-        circle.update(tank);
+        getScreen().render(Gdx.graphics.getDeltaTime());
     }
 
     @Override
     public void dispose() {
         batch.dispose();
-        tank.dispose();
     }
-
-    // Домашнее задание:
-    // - Задать координаты точки, и нарисовать в ней круг (любой круг, радиусом пикселей 50)
-    // - Если "танк" подъедет вплотную к кругу, то круг должен переместиться в случайную точку
-    // - * Нельзя давать танку заезжать за экран
 }
