@@ -92,6 +92,10 @@ public class Tank extends GameObject {
     public void fire() {
         tmp.set(position).add(32 * MathUtils.cosDeg(angle), 32 * MathUtils.sinDeg(angle));
         gc.getProjectilesController().setup(tmp, angle);
+//      раскидывает снаряды веером
+//        for (int i =-90; i < 90; i++) {
+//            gc.getProjectilesController().setup(tmp, angle+i);
+//        }
     }
 
     public void checkBounds() {
