@@ -37,6 +37,8 @@ public class Tank extends GameObject {
             destination.set(Gdx.input.getX(), 720 - Gdx.input.getY());
         }
         if (position.dst(destination) > 3.0f) {
+            //tmp.set(destination).dst(position).nor().scl(speed);
+            //position.mulAdd (tmp,dt);
             float angleTo = tmp.set(destination).sub(position).angle();
             if (Math.abs(angle - angleTo) > 3.0f) {
                 if (angle > angleTo) {
