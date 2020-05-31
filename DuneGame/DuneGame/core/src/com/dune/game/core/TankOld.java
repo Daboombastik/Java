@@ -8,45 +8,24 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
-public class Tank extends GameObject implements Poolable {
-    public enum Owner {
-        PLAYER, AI
-    }
-
-    private Owner ownerType;
-    private Weapon weapon;
+public class TankOld extends GameObject {
     private Vector2 destination;
     private TextureRegion[] textures;
-    private TextureRegion progressbarTexture;
-    private int hp;
     private float angle;
     private float speed;
     private float rotationSpeed;
 
     private float moveTimer;
     private float timePerFrame;
-    private int container;
 
-    @Override
-    public boolean isActive() {
-        return hp > 0;
-    }
-
-    public Tank(GameController gc) {
+    public TankOld(GameController gc, float x, float y) {
         super(gc);
-        this.progressbarTexture = Assets.getInstance().getAtlas().findRegion("progressbar");
+        this.position.set(x, y);
+        this.destination = new Vector2(position);
+        this.textures = Assets.getInstance().getAtlas().findRegion("tankanim").split(64, 64)[0];
+        this.speed = 120.0f;
         this.timePerFrame = 0.08f;
         this.rotationSpeed = 90.0f;
-    }
-
-    public void setup(Owner ownerType, float x, float y) {
-        this.textures = Assets.getInstance().getAtlas().findRegion("tankanim").split(64,64)[0];
-        this.position.set(x, y);
-        this.ownerType = ownerType;
-        this.speed = 120.0f;
-        this.hp = 100;
-        this.weapon = new Weapon(Weapon.Type.HARVEST, 3.0f, 1);
-        this.destination = new Vector2(position);
     }
 
     private int getCurrentFrameIndex() {
@@ -54,10 +33,12 @@ public class Tank extends GameObject implements Poolable {
     }
 
     public void update(float dt) {
-        if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+        if (Gdx.input.justTouched()) {
             destination.set(Gdx.input.getX(), 720 - Gdx.input.getY());
         }
         if (position.dst(destination) > 3.0f) {
+            //tmp.set(destination).dst(position).nor().scl(speed);
+            //position.mulAdd (tmp,dt);
             float angleTo = tmp.set(destination).sub(position).angle();
             if (Math.abs(angle - angleTo) > 3.0f) {
                 if (angle > angleTo) {
@@ -88,21 +69,35 @@ public class Tank extends GameObject implements Poolable {
                 position.mulAdd(tmp, -dt);
             }
         }
-        updateWeapon(dt);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
+            fire();
+        }
         checkBounds();
+//        вариант для управления клавишами
+//        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+//            angle += 180.0f * dt;
+//        }
+//        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+//            angle -= 180.0f * dt;
+//        }
+//        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+//            position.add(speed * MathUtils.cosDeg(angle) * dt, speed * MathUtils.sinDeg(angle) * dt);
+//            moveTimer += dt;
+//        } else {
+//            if (getCurrentFrameIndex() != 0) {
+//                moveTimer += dt;
+//            }
+//        }
+
     }
 
-    public void updateWeapon(float dt) {
-        if (weapon.getType() == Weapon.Type.HARVEST) {
-            if (gc.getMap().getResourceCount(this) > 0) {
-                int result = weapon.use(dt);
-                if (result > -1) {
-                    container += gc.getMap().harvestResource(this, result);
-                }
-            } else {
-                weapon.reset();
-            }
-        }
+    public void fire() {
+        tmp.set(position).add(32 * MathUtils.cosDeg(angle), 32 * MathUtils.sinDeg(angle));
+        gc.getProjectilesController().setup(tmp, angle);
+//      раскидывает снаряды веером
+//        for (int i =-90; i < 90; i++) {
+//            gc.getProjectilesController().setup(tmp, angle+i);
+//        }
     }
 
     public void checkBounds() {
@@ -122,12 +117,5 @@ public class Tank extends GameObject implements Poolable {
 
     public void render(SpriteBatch batch) {
         batch.draw(textures[getCurrentFrameIndex()], position.x - 40, position.y - 40, 40, 40, 80, 80, 1, 1, angle);
-        if (weapon.getType() == Weapon.Type.HARVEST && weapon.getUsageTimePercentage() > 0.0f) {
-            batch.setColor(0.2f, 0.2f, 0.0f, 1.0f);
-            batch.draw(progressbarTexture, position.x - 32, position.y + 30, 64, 12);
-            batch.setColor(1.0f, 1.0f, 0.0f, 1.0f);
-            batch.draw(progressbarTexture, position.x - 30, position.y + 32, 60 * weapon.getUsageTimePercentage(), 8);
-            batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-        }
     }
 }
